@@ -1,8 +1,8 @@
 
 import Router  from './Router.jsx'
-
 import { useState } from 'react';
 import { OnboardingModal } from './components/organisms/OnboardingModal/OnboardingModal';
+
 
 
 function App() {
@@ -15,6 +15,8 @@ function App() {
 
   return (
     <>
+ 
+
       {/* Si showOnboarding es true, mostramos el modal */}
       {showOnboarding && <OnboardingModal onEnter={handleEnter} />}
       

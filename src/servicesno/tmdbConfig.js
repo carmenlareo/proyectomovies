@@ -10,3 +10,5 @@ export const getFullPosterUrl = (backdropPath) => {
   if (!backdropPath) return 'https://via.placeholder.com/500x750?text=No+Image'; // Imagen de respaldo por si no hay póster
   return `${TMDB_IMAGE_BASE_URL}${TMDB_POSTER_SIZE}${backdropPath}`;
 };
+
+
