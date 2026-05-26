@@ -17,9 +17,9 @@ export function Home() {
         activeCategory={activeCategory}
         onCategoryChange={(selected) => setActiveCategory(selected)}
       />
-      <main>
-        {/* En el futuro aquí podrías añadir un BannerMol o un FooterOrganism */}
-        <PopularMovies />
+  <main>
+        {/* EN ESTA LÍNEA (22): Unificamos pasando la categoría activa al organismo */}
+        <PopularMovies activeCategory={activeCategory} />
       </main>
 
     </div>
