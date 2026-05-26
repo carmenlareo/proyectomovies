@@ -1,0 +1,77 @@
+/* ============================================
+   COVID TRACKER — ESTILOS GLOBALES
+   Este archivo define los colores, el reset
+   y la estructura base de TODA la app.
+   ============================================ */
+
+/* Importamos la fuente Poppins desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&display=swap');
+
+/* --------------------------------------------
+   VARIABLES DE COLORES
+   Se definen una vez aquí y se usan en toda
+   la app con var(--nombre-de-la-variable)
+   -------------------------------------------- */
+
+:root {
+    /* Paleta de Colores */
+    --color-bg-dark: #0B1326;      /* Azul marino muy oscuro (Ideal para fondos principales oscuros) */
+    --color-surface-dark: #222A3D; /* Azul noche (Tarjetas, contenedores, sidebars) */
+    --color-text-dark: #3C3933;    /* Gris cálido/marrón oscuro (Texto sobre fondos claros) */
+    --color-accent: #FFD165;       /* Amarillo dorado (Botones principales, llamadas a la acción, detalles) */
+    --color-light-bg: #DAE2FD;     /* Lavanda claro suave (Fondos claros, badges, texto secundario en fondo oscuro) */
+    --color-white: #FFFFFF;
+
+    /* Tipografía Global */
+    --font-global: 'Plus Jakarta Sans', sans-serif;
+    
+    /* Tamaños de fuente (Escala modular básica) */
+    --font-size-xs: 0.875rem; /* 14px */
+    --font-size-base: 1rem;   /* 16px */
+    --font-size-md: 1.25rem;  /* 20px */
+    --font-size-lg: 1.75rem;  /* 28px */
+    --font-size-xl: 2.5rem;   /* 40px */
+}
+
+/* Reset básico y suavizado de fuente */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-global);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    /* Ejemplo usando tu paleta para un "Modo Oscuro" por defecto */
+    background-color: var(--color-bg-dark);
+    color: var(--color-light-bg); 
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    height: 100%;
+}
+
+/* Títulos con peso visual fuerte gracias a Plus Jakarta Sans */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-global);
+    font-weight: 700;
+    color: var(--color-white);
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    padding: 15px;
+}
+
+h1 { font-size: var(--font-size-xl); }
+h2 { font-size: var(--font-size-lg); }
+h3 { font-size: var(--font-size-md); }
+
+a {
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--color-white);
+}

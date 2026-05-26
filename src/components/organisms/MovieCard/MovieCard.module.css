@@ -1,0 +1,79 @@
+/* Contenedor exterior de la tarjeta */
+.cardContainer {
+  width: 300px; /* Tamaño estándar para un catálogo de películas */
+  background-color: transparent; /* Fondo transparente para que use el del sitio */
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espacio entre la imagen y el texto */
+  font-family: sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  padding-left: 30px;
+}
+
+/* Efecto visual al pasar el mouse por encima de la tarjeta */
+.cardContainer:hover {
+  transform: translateY(-5px); /* Hace que la tarjeta suba un poquito */
+}
+
+/* Envoltura de la imagen para controlar los bordes redondeados */
+.imageWrapper {
+  width: 100%;
+  aspect-ratio: 2 / 3; /* Proporción estándar de pósters de cine */
+  border-radius: 12px; /* Esquinas redondeadas */
+  overflow: hidden; /* Evita que la imagen se salga del borde redondeado */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra suave */
+}
+
+/* Estilos de la imagen del póster */
+.poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ajusta la imagen sin deformarla */
+}
+
+/* Contenedor de los textos */
+.infoWrapper {
+  padding: 0px 4px;
+}
+
+/* Título de la película */
+.movieTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff; /* El color amarillo dorado de tu interfaz */
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Si el título es muy largo, añade "..." */
+}
+
+.movieTitle:hover {
+  color: #ffd165; /* El color amarillo dorado de tu interfaz */
+}
+
+/* Género y Año */
+.movieMetadata {
+  font-size: 13px;
+  color: #9aa5b5; /* Gris claro de la sección de elementos secundarios */
+  margin: 0px 0 0 0;
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+}
+
+/* El puntito separador */
+.separator {
+  margin: 0 6px;
+  color: #556275;
+}
+
+/* --- MEDIA QUERY PARA MÓVILES (Pantallas menores a 768px) --- */
+@media (max-width: 768px) {
+.cardContainer {
+  width: 180px; 
+  padding: 0%;
+  margin: 2%;
+
+  }
+}

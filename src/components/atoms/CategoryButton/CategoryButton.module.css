@@ -1,0 +1,27 @@
+.btnCategory {
+  padding: 10px 24px;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: sans-serif;
+  background-color: transparent;
+  color: #dae2fd; /* El color amarillo dorado de tus textos */
+  border: 1px solid #dae2fd; /* Borde dorado sutil */
+  border-radius: 14px; /* Bordes muy redondeados como en la foto */
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+}
+
+/* Efecto sutil al pasar el mouse por encima de un botón inactivo */
+.btnCategory:hover {
+  background-color: rgba(241, 184, 21, 0.05);
+  border-color: #ffd254;
+}
+
+/* 🌟 Estilo para cuando el botón está seleccionado */
+.btnCategory.active {
+  background-color: #ffd254; /* Fondo amarillo dorado brillante */
+  color: #121620; /* Texto oscuro para contrastar con el fondo */
+  border-color: #ffd254;
+  font-weight: 400;
+}

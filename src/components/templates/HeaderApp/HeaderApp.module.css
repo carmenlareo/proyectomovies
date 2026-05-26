@@ -1,0 +1,46 @@
+.header {
+  width: 100%;
+  background-color: #0b0e14; /* Fondo oscuro impecable */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Separador sutil inferior */
+  padding: 5px 0 5px 0;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column; /* Alineación en vertical: Logo arriba, carrusel abajo */
+  gap: 8px;
+}
+
+.logoRow {
+  padding: 0 20px;
+}
+
+.logo {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+  font-family: sans-serif;
+  letter-spacing: 1px;
+  margin: 0;
+  text-transform: uppercase;
+  text-align: left; 
+  width: 100%;
+}
+
+.carouselRow {
+  width: 100%;
+}
+
+/* --- MEDIA QUERY PARA MÓVILES (Pantallas menores a 768px) --- */
+@media (max-width: 768px) {
+  .logo {
+    /* En dispositivos móviles se alinea al centro automáticamente */
+    text-align: center;
+  }
+}

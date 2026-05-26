@@ -1,0 +1,30 @@
+.carouselWrapper {
+  width: 100%;
+  overflow: hidden; /* Corta lo que sobra para que no rompa el diseño */
+  padding: 10px 0;
+}
+
+.carouselContainer {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto; /* Permite el scroll horizontal */
+  padding: 5px 20px; /* Padding a los lados para que el primer botón no pegue al borde */
+  
+  /* Comportamiento de "Snap" (hace que los botones se alineen solos al soltar el dedo) */
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  
+  /* Ocultar barra de scroll en Firefox */
+  scrollbar-width: none; 
+ 
+}
+
+/* Ocultar barra de scroll en Chrome, Safari y Edge */
+.carouselContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.carouselItem {
+  flex-shrink: 0; /* Evita que los botones se aplasten cuando hay muchos */
+  scroll-snap-align: start; /* Alineación para el efecto Snap */
+}
