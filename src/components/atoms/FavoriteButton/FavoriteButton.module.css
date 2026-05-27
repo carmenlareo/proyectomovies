@@ -42,7 +42,7 @@
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
-  justifyContent: center;
+  justify-content: center;
 }
 
 .image {
@@ -68,6 +68,7 @@
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2; /* 👈 Agrega esta línea */
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

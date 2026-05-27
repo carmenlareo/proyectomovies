@@ -1,22 +1,91 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import tmdbClient from '../../../api/tmdb'; 
 import FavoriteButton from '../../atoms/FavoriteButton/FavoriteButton';
-// 1. Importamos los estilos del módulo de CSS
 import styles from './PopularMovies.module.css'; 
 
-function PopularMovies() {
-  const [movies, setMovies] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
+
+const GENRE_MAP = {
+  'All': null,
+  'Action': 28,
+  'Comedy': 35,
+  'Drama': 18,
+  'Sci-Fi': 878
+};
+
+function PopularMovies({ activeCategory = 'All', searchQuery = '' }) {
+  const [movies, setMovies] = useState([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [selectedMovie, setSelectedMovie] = useState(null);
+
+  const observer = useRef();
+
+  // 1. CADA VEZ QUE CAMBIE LA BÚSQUEDA O LA CATEGORÍA, LIMPIAMOS TODO Y REINICIAMOS A LA PÁGINA 1
+  useEffect(() => {
+    setMovies([]);
+    setPage(1);
+    setHasMore(true);
+    setError(null);
+  }, [activeCategory, searchQuery]);
+
+  // 2. PETICIÓN A LA API (SE DISPARA AL CAMBIAR CATEGORÍA, PÁGINA O BÚSQUEDA)
   useEffect(() => {
     const fetchMovies = async () => {
       try {
         setLoading(true);
-        const response = await tmdbClient.get('/movie/popular');
-        setMovies(response.data.results);
+        setError(null);
+        
+        let response;
+
+        // PRIORIDAD: Si hay algo escrito en el buscador, usamos /search/movie
+        if (searchQuery && searchQuery.trim() !== '') {
+          response = await tmdbClient.get('/search/movie', {
+            params: {
+              query: searchQuery,
+              page: page,
+              include_adult: false,
+              language: 'es-ES' // Títulos y descripciones en español
+            }
+          });
+        } 
+        // Si no hay búsqueda, usamos las categorías tradicionales del Home
+        else {
+          const genreId = GENRE_MAP[activeCategory];
+
+          if (activeCategory === 'All' || !genreId) {
+            response = await tmdbClient.get('/movie/popular', {
+              params: { page: page, language: 'es-ES' }
+            });
+          } else {
+            response = await tmdbClient.get('/discover/movie', {
+              params: {
+                with_genres: genreId,
+                sort_by: 'popularity.desc',
+                page: page,
+                language: 'es-ES'
+              }
+            });
+          }
+        }
+        
+        const newMovies = response.data.results || [];
+        
+        // CRÍTICO: Si estamos en la página 1, SUSTITUIMOS las películas viejas por las nuevas de la búsqueda.
+        // Si la página es mayor a 1, significa que es el Scroll Infinito actuando, ahí sí las acumulamos.
+        setMovies(prevMovies => {
+          if (page === 1) return newMovies;
+          return [...prevMovies, ...newMovies];
+        });
+        
+        // Verificar si nos quedamos sin páginas en TMDB
+        if (newMovies.length === 0 || response.data.page >= response.data.total_pages) {
+          setHasMore(false);
+        }
       } catch (err) {
-        console.error(err);
+        console.error("Error cargando datos de TMDB:", err);
         setError('Error al conectar con TMDB.');
       } finally {
         setLoading(false);
@@ -24,46 +93,103 @@ function PopularMovies() {
     };
 
     fetchMovies();
-  }, []);
+  }, [activeCategory, page, searchQuery]); // <-- Escuchando activamente los cambios de búsqueda
 
-  if (loading) return <div className={styles.center}>Cargando películas...</div>;
-  if (error) return <div className={styles.center} style={{ color: '#ff4a4a' }}>{error}</div>;
+  // 3. CALLBACK DEL INTERSECTION OBSERVER PARA EL SCROLL INFINITO
+  const lastMovieElementRef = useCallback(node => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prevPage => prevPage + 1);
+      }
+    });
+
+    if (node) observer.current.observe(node);
+  }, [loading, hasMore]);
+
+  // Título dinámico
+  const renderTitle = () => {
+    if (searchQuery && searchQuery.trim() !== '') return `Resultados para: "${searchQuery}"`;
+    return activeCategory === 'All' ? 'Películas Más Populares' : `Películas de ${activeCategory}`;
+  };
 
   return (
-    // 2. Cambiamos 'style={styles...}' por 'className={styles...}'
     <section className={styles.organismContainer}>
-      <h2 className={styles.organismTitle}>Películas Más Populares</h2>
+      <h2 className={styles.organismTitle}>{renderTitle()}</h2>
       
       <div className={styles.grid}>
-        {movies.map((movie) => (
-          <article key={movie.id} className={styles.card}>
-            
-            {/* Contenedor con position relative para que el corazón flote */}
-            <div className={styles.imageContainer}>
-              <img 
-                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} 
-                alt={movie.title} 
-                className={styles.image}
-                loading="lazy"
-              />
-              
-              {/* Contenedor flotante absoluto para el corazón */}
-              <div className={styles.favoriteOverlay}>
-                <FavoriteButton movie={movie} />
+        {movies.map((movie, index) => {
+          const isLastElement = movies.length === index + 1;
+          
+          return (
+            <article 
+              key={`${movie.id}-${index}`} 
+              ref={isLastElement ? lastMovieElementRef : null}
+              className={styles.card}
+              onClick={() => setSelectedMovie(movie)}
+              style={{ cursor: 'pointer' }}
+            >
+              <div className={styles.imageContainer}>
+                <img 
+                  src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Poster'} 
+                  alt={movie.title} 
+                  className={styles.image}
+                  loading="lazy"
+                />
+                <div className={styles.favoriteOverlay} onClick={(e) => e.stopPropagation()}>
+                  <FavoriteButton movie={movie} />
+                </div>
               </div>
-            </div>
 
-            <div className={styles.cardContent}>
-              <h3 className={styles.movieTitle}>{movie.title}</h3>
-              <div className={styles.meta}>
-                <span className={styles.rating}>⭐ {movie.vote_average.toFixed(1)}</span>
-                <span className={styles.date}>{movie.release_date ? movie.release_date.split('-')[0] : ''}</span>
+              <div className={styles.cardContent}>
+                <h3 className={styles.movieTitle}>{movie.title}</h3>
+                <div className={styles.meta}>
+                  <span className={styles.rating}>⭐ {movie.vote_average ? movie.vote_average.toFixed(1) : '0.0'}</span>
+                  <span className={styles.date}>
+                    {movie.release_date ? movie.release_date.split('-')[0] : ''}
+                  </span>
+                </div>
               </div>
-            </div>
-
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
+
+      {loading && <div className={styles.center}>Cargando películas...</div>}
+      {error && <div className={styles.center} style={{ color: '#ff4a4a' }}>{error}</div>}
+      {!hasMore && movies.length > 0 && <div className={styles.center} style={{ color: '#8e96a7', fontSize: '0.9rem', marginTop: '2rem' }}>Fin de los resultados.</div>}
+      {!loading && movies.length === 0 && <div className={styles.center}>No se encontraron películas para tu búsqueda.</div>}
+
+      {/* MODAL DETALLE */}
+      {selectedMovie && (
+        <div className={styles.modalOverlay} onClick={() => setSelectedMovie(null)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.closeButton} onClick={() => setSelectedMovie(null)}>✕</button>
+            <div className={styles.modalLayout}>
+              <div className={styles.modalImageWrapper}>
+                <img 
+                  src={selectedMovie.poster_path ? `https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Poster'} 
+                  alt={selectedMovie.title} 
+                  className={styles.modalImage}
+                />
+              </div>
+              <div className={styles.modalInfo}>
+                <h3 className={styles.modalTitle}>{selectedMovie.title}</h3>
+                <div className={styles.modalMeta}>
+                  <span className={styles.rating}>⭐ {selectedMovie.vote_average ? selectedMovie.vote_average.toFixed(1) : '0.0'}</span>
+                  <span className={styles.modalDate}>Año: {selectedMovie.release_date ? selectedMovie.release_date.split('-')[0] : 'N/A'}</span>
+                </div>
+                <h4 className={styles.descriptionTitle}>Descripción / Sinopsis</h4>
+                <p className={styles.modalDescription}>
+                  {selectedMovie.overview || 'Esta película no cuenta con una descripción disponible en este momento.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

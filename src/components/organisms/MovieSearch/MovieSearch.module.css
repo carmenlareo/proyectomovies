@@ -1,0 +1,52 @@
+.searchForm {
+  display: flex;
+  align-items: center;
+}
+
+.searchWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #20283E; /* Fondo gris/azul oscuro */
+  border: 1px solid #323D5A;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efecto de enfoque cuando el usuario hace clic para escribir */
+.searchWrapper:focus-within {
+  border-color: #FFC107; /* El color amarillo de tu UI */
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
+}
+
+.searchButton {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-right: 0.6rem;
+  font-size: 1rem;
+  color: #8E96A7;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.searchButton:hover {
+  transform: scale(1.1);
+}
+
+.searchInput {
+  background: none;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-size: 0.9rem;
+  width: 240px;
+  font-family: inherit;
+}
+
+.searchInput::placeholder {
+  color: #8E96A7;
+}

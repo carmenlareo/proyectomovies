@@ -1,0 +1,27 @@
+.linkableName {
+  color: #FFC107;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.linkableName:hover { color: #fff; }
+
+.castGrid {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto; /* Permite scroll horizontal si son muchos actores */
+  padding: 10px 0;
+}
+.actorCard {
+  min-width: 100px;
+  max-width: 100px;
+  cursor: pointer;
+  background: #182030;
+  border-radius: 6px;
+  overflow: hidden;
+  text-align: center;
+}
+.actorCard img { width: 100%; height: 120px; object-fit: cover; }
+.actorName { font-size: 11px; color: #fff; margin: 4px 2px 0; font-weight: bold; }
+.characterName { font-size: 10px; color: #8e96a7; margin: 2px; }
+.trailerVideo { width: 100%; height: 100%; min-height: 350px; border-radius: 8px; }

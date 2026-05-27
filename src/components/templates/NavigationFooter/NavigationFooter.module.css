@@ -48,6 +48,7 @@ nav a.active {
   padding: 12px 0;
   border-top: 1px solid #233044;
   box-sizing: border-box;
+  z-index: 100;
 }
 
 /* Cada botón individual del menú */

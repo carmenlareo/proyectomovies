@@ -1,0 +1,10 @@
+.personLayout { display: flex; gap: 30px; color: #fff; padding: 20px; }
+.sidebar { width: 30%; text-align: center; border-right: 1px solid #1f2635; padding-right: 20px; }
+.profileImg { width: 100%; border-radius: 12px; object-fit: cover; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+.mainInfo { width: 70%; }
+.biography { color: #b3b9c6; line-height: 1.6; font-size: 14px; max-height: 180px; overflow-y: auto; }
+.relatedMoviesGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px; }
+.miniMovieCard { cursor: pointer; text-align: center; background: #131926; padding: 8px; border-radius: 8px; transition: transform 0.2s; }
+.miniMovieCard:hover { transform: translateY(-5px); }
+.miniMovieCard img { width: 100%; border-radius: 6px; }
+.miniMovieTitle { font-size: 12px; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
