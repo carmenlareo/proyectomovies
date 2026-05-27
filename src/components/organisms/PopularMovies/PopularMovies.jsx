@@ -3,6 +3,8 @@ import tmdbClient from '../../../api/tmdb';
 import FavoriteButton from '../../atoms/FavoriteButton/FavoriteButton';
 import styles from './PopularMovies.module.css'; 
 
+
+
 const GENRE_MAP = {
   'All': null,
   'Action': 28,
