@@ -104,3 +104,138 @@
   color: #ffffff;
   font-size: 1.1rem;
 }
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000; /* Asegura que se monte por encima de headers y footers */
+  padding: 20px;
+}
+
+.modalContent {
+  background-color: #181a20;
+  border: 1px solid #2a2e3a;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 750px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  animation: fadeIn 0.25s ease-out;
+}
+
+.closeButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10;
+}
+
+.closeButton:hover {
+  background: #ff4a4a;
+}
+
+.modalLayout {
+  display: flex;
+  flex-direction: column; /* Diseño móvil por defecto */
+}
+
+@media (min-width: 600px) {
+  .modalLayout {
+    flex-direction: row; /* En desktop se pone en horizontal (Foto izquierda, texto derecha) */
+  }
+}
+
+.modalImageWrapper {
+  flex: 1;
+  max-height: 350px;
+  overflow: hidden;
+}
+
+@media (min-width: 600px) {
+  .modalImageWrapper {
+    max-height: none;
+    width: 40%;
+  }
+}
+
+.modalImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modalInfo {
+  flex: 1.5;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalTitle {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.modalMeta {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modalDate {
+  font-size: 0.9rem;
+  color: #a0a5b5;
+}
+
+.descriptionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f5c518; /* Color dorado bonito */
+  margin: 0 0 8px 0;
+}
+
+.modalDescription {
+  font-size: 0.95rem;
+  color: #d1d4dc;
+  line-height: 1.6;
+  margin: 0;
+  overflow-y: auto;
+  max-height: 150px; /* Evita que descripciones gigantes rompan el modal */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.organismContainer {
+  padding: 40px 20px;
+  padding-bottom: 100px; /* 👈 Añade esto para dejar aire suficiente para la barra flotante móvil */
+  background-color: #0b0e14;
+  min-height: 100vh;
+  color: #ffffff;
+}
