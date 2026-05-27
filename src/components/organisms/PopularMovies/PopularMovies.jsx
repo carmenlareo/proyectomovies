@@ -11,7 +11,7 @@ const GENRE_MAP = {
   'Sci-Fi': 878
 };
 
-function PopularMovies({ activeCategory = 'All' }) {
+function PopularMovies({ activeCategory = 'All', searchQuery = '' }) {
   const [movies, setMovies] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -19,18 +19,17 @@ function PopularMovies({ activeCategory = 'All' }) {
   const [hasMore, setHasMore] = useState(true);
   const [selectedMovie, setSelectedMovie] = useState(null);
 
-  // Referencia para el Intersection Observer
   const observer = useRef();
 
-  // Resetear estados cuando cambia la categoría activa
+  // 1. CADA VEZ QUE CAMBIE LA BÚSQUEDA O LA CATEGORÍA, LIMPIAMOS TODO Y REINICIAMOS A LA PÁGINA 1
   useEffect(() => {
     setMovies([]);
     setPage(1);
     setHasMore(true);
     setError(null);
-  }, [activeCategory]);
+  }, [activeCategory, searchQuery]);
 
-  // Petición a la API basada en la página y la categoría actual
+  // 2. PETICIÓN A LA API (SE DISPARA AL CAMBIAR CATEGORÍA, PÁGINA O BÚSQUEDA)
   useEffect(() => {
     const fetchMovies = async () => {
       try {
@@ -38,33 +37,53 @@ function PopularMovies({ activeCategory = 'All' }) {
         setError(null);
         
         let response;
-        const genreId = GENRE_MAP[activeCategory];
 
-        if (activeCategory === 'All' || !genreId) {
-          response = await tmdbClient.get('/movie/popular', {
-            params: { page: page }
-          });
-        } else {
-          response = await tmdbClient.get('/discover/movie', {
+        // PRIORIDAD: Si hay algo escrito en el buscador, usamos /search/movie
+        if (searchQuery && searchQuery.trim() !== '') {
+          response = await tmdbClient.get('/search/movie', {
             params: {
-              with_genres: genreId,
-              sort_by: 'popularity.desc',
-              page: page
+              query: searchQuery,
+              page: page,
+              include_adult: false,
+              language: 'es-ES' // Títulos y descripciones en español
             }
           });
+        } 
+        // Si no hay búsqueda, usamos las categorías tradicionales del Home
+        else {
+          const genreId = GENRE_MAP[activeCategory];
+
+          if (activeCategory === 'All' || !genreId) {
+            response = await tmdbClient.get('/movie/popular', {
+              params: { page: page, language: 'es-ES' }
+            });
+          } else {
+            response = await tmdbClient.get('/discover/movie', {
+              params: {
+                with_genres: genreId,
+                sort_by: 'popularity.desc',
+                page: page,
+                language: 'es-ES'
+              }
+            });
+          }
         }
         
-        const newMovies = response.data.results;
+        const newMovies = response.data.results || [];
         
-        // Acumular películas anteriores con las nuevas distribuidas por TMDB
-        setMovies(prevMovies => [...prevMovies, ...newMovies]);
+        // CRÍTICO: Si estamos en la página 1, SUSTITUIMOS las películas viejas por las nuevas de la búsqueda.
+        // Si la página es mayor a 1, significa que es el Scroll Infinito actuando, ahí sí las acumulamos.
+        setMovies(prevMovies => {
+          if (page === 1) return newMovies;
+          return [...prevMovies, ...newMovies];
+        });
         
-        // Verificar si llegamos al límite de páginas que ofrece TMDB
+        // Verificar si nos quedamos sin páginas en TMDB
         if (newMovies.length === 0 || response.data.page >= response.data.total_pages) {
           setHasMore(false);
         }
       } catch (err) {
-        console.error(err);
+        console.error("Error cargando datos de TMDB:", err);
         setError('Error al conectar con TMDB.');
       } finally {
         setLoading(false);
@@ -72,9 +91,9 @@ function PopularMovies({ activeCategory = 'All' }) {
     };
 
     fetchMovies();
-  }, [activeCategory, page]);
+  }, [activeCategory, page, searchQuery]); // <-- Escuchando activamente los cambios de búsqueda
 
-  // Callback ref para interceptar el scroll en la última tarjeta del grid
+  // 3. CALLBACK DEL INTERSECTION OBSERVER PARA EL SCROLL INFINITO
   const lastMovieElementRef = useCallback(node => {
     if (loading) return;
     if (observer.current) observer.current.disconnect();
@@ -88,11 +107,15 @@ function PopularMovies({ activeCategory = 'All' }) {
     if (node) observer.current.observe(node);
   }, [loading, hasMore]);
 
+  // Título dinámico
+  const renderTitle = () => {
+    if (searchQuery && searchQuery.trim() !== '') return `Resultados para: "${searchQuery}"`;
+    return activeCategory === 'All' ? 'Películas Más Populares' : `Películas de ${activeCategory}`;
+  };
+
   return (
     <section className={styles.organismContainer}>
-      <h2 className={styles.organismTitle}>
-        {activeCategory === 'All' ? 'Películas Más Populares' : `Películas de ${activeCategory}`}
-      </h2>
+      <h2 className={styles.organismTitle}>{renderTitle()}</h2>
       
       <div className={styles.grid}>
         {movies.map((movie, index) => {
@@ -100,7 +123,7 @@ function PopularMovies({ activeCategory = 'All' }) {
           
           return (
             <article 
-              key={`${movie.id}-${index}`} // Combinación segura por si TMDB duplica un ID en respuestas adyacentes
+              key={`${movie.id}-${index}`} 
               ref={isLastElement ? lastMovieElementRef : null}
               className={styles.card}
               onClick={() => setSelectedMovie(movie)}
@@ -113,7 +136,6 @@ function PopularMovies({ activeCategory = 'All' }) {
                   className={styles.image}
                   loading="lazy"
                 />
-                
                 <div className={styles.favoriteOverlay} onClick={(e) => e.stopPropagation()}>
                   <FavoriteButton movie={movie} />
                 </div>
@@ -133,18 +155,16 @@ function PopularMovies({ activeCategory = 'All' }) {
         })}
       </div>
 
-      {/* Feedback de carga en la parte inferior */}
-      {loading && <div className={styles.center}>Cargando más películas...</div>}
-      
-      {/* Mensaje de error controlado */}
+      {loading && <div className={styles.center}>Cargando películas...</div>}
       {error && <div className={styles.center} style={{ color: '#ff4a4a' }}>{error}</div>}
+      {!hasMore && movies.length > 0 && <div className={styles.center} style={{ color: '#8e96a7', fontSize: '0.9rem', marginTop: '2rem' }}>Fin de los resultados.</div>}
+      {!loading && movies.length === 0 && <div className={styles.center}>No se encontraron películas para tu búsqueda.</div>}
 
-      {/* Detalle de película en pantalla completa (Modal) */}
+      {/* MODAL DETALLE */}
       {selectedMovie && (
         <div className={styles.modalOverlay} onClick={() => setSelectedMovie(null)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <button className={styles.closeButton} onClick={() => setSelectedMovie(null)}>✕</button>
-            
             <div className={styles.modalLayout}>
               <div className={styles.modalImageWrapper}>
                 <img 
@@ -153,7 +173,6 @@ function PopularMovies({ activeCategory = 'All' }) {
                   className={styles.modalImage}
                 />
               </div>
-
               <div className={styles.modalInfo}>
                 <h3 className={styles.modalTitle}>{selectedMovie.title}</h3>
                 <div className={styles.modalMeta}>

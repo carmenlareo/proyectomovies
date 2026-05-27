@@ -13,12 +13,15 @@
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
-  flex-direction: column; /* Alineación en vertical: Logo arriba, carrusel abajo */
+  flex-direction: column; /* Alineación en vertical: Fila Logo/Buscador arriba, carrusel abajo */
   gap: 8px;
 }
 
 .logoRow {
   padding: 0 20px;
+  display: flex;
+  justify-content: space-between; /* Empuja el logo a la izquierda y el buscador a la derecha */
+  align-items: center; /* Los centra verticalmente entre sí */
 }
 
 .logo {
@@ -30,7 +33,11 @@
   margin: 0;
   text-transform: uppercase;
   text-align: left; 
-  width: 100%;
+}
+
+.searchContainer {
+  display: flex;
+  align-items: center;
 }
 
 .carouselRow {
@@ -39,8 +46,20 @@
 
 /* --- MEDIA QUERY PARA MÓVILES (Pantallas menores a 768px) --- */
 @media (max-width: 768px) {
+  .logoRow {
+    flex-direction: column; /* En móviles, el logo va arriba y el buscador abajo */
+    gap: 12px; /* Espacio entre el logo y el buscador */
+    padding: 10px 20px;
+  }
+
   .logo {
     /* En dispositivos móviles se alinea al centro automáticamente */
     text-align: center;
+    width: 100%;
+  }
+
+  .searchContainer {
+    width: 100%;
+    justify-content: center; /* Centra el buscador en pantallas móviles */
   }
 }
