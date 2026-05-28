@@ -1,7 +1,5 @@
 ## ProyectoMovies
 
-https://carmenlareo.notion.site/ProyectoMovies-364b12446b1e804b98f1fa4f918314da?source=copy_link
-
 Aplicación web pensada para cinéfilos y amantes del cine.
 
 El objetivo principal es ofrecer un espacio personalizado donde cualquier usuario pueda:
@@ -66,6 +64,9 @@ Proyecto desarrollado en el bootcamp FemCoders por:
     └── styles/
 
 ```
+## Notion
+
+https://carmenlareo.notion.site/ProyectoMovies-364b12446b1e804b98f1fa4f918314da?source=copy_link
 
 ## Instalación
 
